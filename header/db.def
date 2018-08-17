@@ -1,0 +1,120 @@
+Database::Database(string db){
+	this->db_name = db;
+	this->table_num = 0;
+	this->def = "None";
+	this->tables.clear();
+	this->save();
+}
+
+Database::Database(){
+	
+}
+
+int Database::set(string db){
+	vector<string> qry;
+	string line;
+	try{
+		ifstream input( "./."+db+"/.conf" );
+		getline(input,line);
+		qry = cutter(line, ',');
+		if(qry.size() != 3){
+			cout<<"\nFile curropted : "<<qry.size()<<qry[0];
+			throw qry.size();
+		}
+		this->db_name = qry[0];
+		this->table_num = stoi(qry[1]);
+		this->def = qry[2];
+		getline(input,line);
+		this->tables = line;
+		input.close();
+	}
+	catch(...){
+		return 1;
+	}
+	return 0;
+}
+
+void Database::save(){
+	string temp;
+	temp.clear();
+	
+	temp = temp + this->db_name;
+	temp.push_back(',');
+	
+	temp = temp + to_string(this->table_num);
+	temp.push_back(',');
+	
+	temp = temp + this->def;
+	temp.push_back('\n');
+	
+	temp = temp + this->tables;
+	temp.push_back('\n');
+	
+	ofstream output( "./."+this->db_name+"/.conf" );
+	output << temp;
+	output.close();	
+}
+
+int Database::check_table(string tb){
+	vector<string> tables_all;
+	tables_all = cutter(this->tables, ',');
+	for(int i=0;i<tables_all.size();++i){
+		if(tables_all[i] == tb){
+			return 1;
+		}
+	}
+	return 0;
+}
+
+string Database::name(){
+	return db_name;
+}
+
+void Database::disp(){
+	cout<<endl;
+	cout<<"  +================================================================================================================================================+"<<endl;
+	cout<<"  |---------------------------------------------------------Database Details-----------------------------------------------------------------------|"<<endl;
+	cout<<"  +================================================================================================================================================+"<<endl;
+	cout<<"\nName : "<<this->db_name;
+	cout<<"\nDiscription : "<<this->def;
+	cout<<"\nNumber of Tables : "<<this->table_num;
+	cout<<"\nTABLES : ";
+	vector<string> tables_all;
+	tables_all = cutter(this->tables, ',');
+	for(int i=0;i<tables_all.size();++i){
+		cout<<"\n----> "<<tables_all[i];
+	}
+	if(tables_all.size() == 0){
+		cout<<"None";
+	}
+}
+
+int Database::tb_crt(string tb){
+	try{
+		if(this->table_num)
+			tables.push_back(',');
+		tables = tables + tb;
+		++this->table_num;
+		return 0;
+	}
+	catch(...){
+		cout<<"\nFailed to Create Table";
+		return 1;
+	}
+}
+
+void Database::dele(string tb){
+	vector<string> tables_all;
+	tables_all = cutter(this->tables, ',');
+	this->tables.clear();
+	for(int i=0;i<tables_all.size();++i){
+		if(tables_all[i] == tb){
+			continue;
+		}
+		if(!this->tables.empty()){
+			this->tables.push_back(',');
+		}
+		tables = tables + tables_all[i];
+	}
+}
+

@@ -1,0 +1,514 @@
+string Table::name(){									//name returner
+	return tb_name;
+}
+
+Table::Table(){}									//Default constructor (deleting )
+
+Table::Table(string tb){								//parameterized constructor (creating new table)
+	this->data.clear();
+	this->row = 0;
+	this->col = 0;
+	this->def = "None";
+	this->tb_name = tb;
+	this->label.clear();
+	this->dval.clear();
+	this->dt.clear();
+}
+
+void Table::sorter(string lab = ""){
+	vector<string> tmp;
+	vector<string> tmp1;
+	tmp = cutter(this->label, ',');
+	if(lab == ""){
+		lab = tmp[0];
+	}
+	int index;
+	string tm;
+	index = this->lab_find(lab);
+	if(index == -1){
+		cout<<"\n NO lable "<<lab<<" found";
+		return ;
+	}
+	for(int i=0;i<this->data.size();++i){
+		for(int k=0;k<(this->data.size()-(i+1));++k){
+			tmp = cutter(this->data[k], ',');
+			tmp1 = cutter(this->data[k+1], ',');
+			if(tmp[index] > tmp1[index]){
+				tm = this->data[k];
+				this->data[k] = this->data[k+1];
+				this->data[k+1] = tm;
+			}
+		}
+	}
+	cout<<"\nSorted";
+}
+
+void Table::dnsorter(string lab = ""){
+	vector<string> tmp;
+	vector<string> tmp1;
+	tmp = cutter(this->label, ',');
+	if(lab == ""){
+		lab = tmp[0];
+	}
+	int index;
+	string tm;
+	index = this->lab_find(lab);
+	if(index == -1){
+		cout<<"\n NO lable "<<lab<<" found";
+		return ;
+	}
+	for(int i=0;i<this->data.size();++i){
+		for(int k=0;k<(this->data.size()-(i+1));++k){
+			tmp = cutter(this->data[k], ',');
+			tmp1 = cutter(this->data[k+1], ',');
+			if(tmp[index] < tmp1[index]){
+				tm = this->data[k];
+				this->data[k] = this->data[k+1];
+				this->data[k+1] = tm;
+			}
+		}
+	}
+	cout<<"\nSorted";
+}
+
+int Table::lab_find(string lab){
+	vector<string> tmp;
+	tmp = cutter(label, ',');
+	int i;
+	
+	for(i=0;i<tmp.size();++i){
+		if(tmp[i] == lab){
+			return i;
+		}
+	}
+	
+	if(i == tmp.size())
+		cout<<"\nNO lable with name : "<<lab;
+	return -1;
+}
+
+void Table::print(int num=0){
+	int num2;
+	if(num == 0){
+		num2 = this->row;
+	}
+	else
+	if(num == 10){
+		num = 0;
+		num2 = min(10,this->row);
+	}
+	else{
+		num2 = this->row;
+		num = max(num2-10,0);
+	}
+	vector<string> tmp;
+	tmp = cutter(this->label, ',');
+	int ma[tmp.size()];
+	int dis;
+	for(int i=0;i<tmp.size();++i){
+		ma[i] = (tmp[i].size());
+	}
+	
+	for(int k=num;k<num2;++k){
+		tmp = cutter(this->data[k], ',');
+		for(int i=0;i<tmp.size();++i){
+			dis = tmp[i].size();
+			ma[i] = max(ma[i],dis);
+		}
+	}
+	
+	cout<<endl<<"-";
+	for(int i=0;i<tmp.size();++i){
+		for(int j=0;j<ma[i];++j){
+			cout<<"-";
+		}
+		cout<<"-";
+	}
+	
+	cout<<endl<<"|";
+	tmp = cutter(this->label, ',');
+	for(int i=0;i<tmp.size();++i){
+		dis = (ma[i] + tmp[i].length())/2;
+		cout<<setw(dis)<<tmp[i]<<setw(ma[i] - dis)<<"|";
+	}
+	
+	
+	cout<<endl<<"=";
+	for(int i=0;i<tmp.size();++i){
+		for(int j=0;j<ma[i];++j){
+			cout<<"=";
+		}
+		cout<<"=";
+	}
+	
+	for(int k=num;k<num2;++k){
+		tmp = cutter(this->data[k], ',');
+		cout<<endl<<"|";
+		for(int i=0;i<tmp.size();++i){
+			dis = (ma[i] +  tmp[i].length())/2;
+			cout<<setw(dis)<<tmp[i]<<setw(ma[i] - dis)<<"|";
+		}
+	}
+	
+	cout<<endl<<"-";
+	for(int i=0;i<tmp.size();++i){
+		for(int j=0;j<ma[i];++j){
+			cout<<"-";
+		}
+		cout<<"-";
+	}
+}
+
+void Table::edt_ele(string ele, string lab){
+	vector<string> tmp;
+	tmp = cutter(label, ',');
+	int i;
+	
+	for(i=0;i<tmp.size();++i){
+		if(tmp[i] == lab){
+			break;
+		}
+	}
+	
+	if(i == tmp.size()){
+		cout<<"\nNO lable with name : "<<lab;
+		return ;
+	}
+	
+	for(int k=0;k<data.size();++k){
+		tmp = cutter(this->data[k], ',');
+		if(tmp[i] == ele){
+			tmp = cutter(this->dt, ',');
+			char t;
+			t = tmp[i][0];
+			string temp, te;
+			if(t == '0'){
+				while((temp.length() == 0)|| (temp.find(',') != string::npos) || (temp[0] == '=') || (temp[0] == '<') || (temp[0] == '>')){
+					cout<<"\nValue Should not contain \',\' \nEnter : ";
+					getline(cin,temp);
+				}
+			}
+			
+			if(t == '1'){
+				double ki;
+				while(1){
+					cout<<"\nValue Should not contain \',\' \nEnter : ";
+					if (cin >> ki) {
+						break;
+					}
+					else {
+						cout << "Please enter a valid integer" << endl;
+						cin.clear();
+						cin.ignore(numeric_limits<streamsize>::max(), '\n');
+					}
+				}
+				temp = to_string(ki);
+			}
+			tmp = cutter(this->data[k], ',');
+			tmp[i] = temp;
+			for(int j=0;j<tmp.size();++j){
+				if(!te.empty())
+					te.push_back(',');
+				te = te + tmp[j];
+			}
+			data[k] = te;
+		}
+	}
+	cout<<"\nSuccessfully edited";
+}
+
+void Table::rem_ele(string ele, string lab){
+	vector<string> tmp;
+	tmp = cutter(label, ',');
+	int i;
+	
+	for(i=0;i<tmp.size();++i){
+		if(tmp[i] == lab){
+			break;
+		}
+	}
+	
+	if(i == tmp.size()){
+		cout<<"\nNO lable with name : "<<lab;
+		return ;
+	}
+	
+	for(int k=0;k<data.size();++k){
+		tmp = cutter(this->data[i], ',');
+		if(tmp[i] == ele){
+			this->data.erase(this->data.begin() + k);
+			--k;
+			--this->row;
+		}
+	}
+	cout<<"\nDone";
+}
+
+void Table::rem_lab(string lab){
+	vector<string> tmp;
+	tmp = cutter(label, ',');
+	string temp;
+	int k = 0;
+	int h = 0;
+	for(int i=0;i<tmp.size();++i){
+		if((tmp[i] == lab)&&(h == 0)){
+			k = i;
+			h = 1;
+			if(k != 0)
+				continue;
+		}
+		if(!temp.empty())
+			temp.push_back(',');
+		temp = temp + tmp[i];
+	}
+	
+	this->label = temp;
+	
+	if(h == 0){
+		cout<<"\nNO lable with name : "<<lab;
+		return ;
+	}
+	
+	if(k == 0){
+		cout<<"\nCant delete the KEY of the table : ";
+		return ;
+	}
+	
+	tmp = cutter(this->dval, ',');
+	temp.clear();
+	tmp.erase(tmp.begin() + k);
+	for(int i=0;i<tmp.size();++i){
+		if(!temp.empty())
+			temp.push_back(',');
+		temp = temp + tmp[i];
+	}
+	this->dval = temp;
+	
+	tmp = cutter(this->dt, ',');
+	temp.clear();
+	tmp.erase(tmp.begin() + k);
+	for(int i=0;i<tmp.size();++i){
+		if(!temp.empty())
+			temp.push_back(',');
+		temp = temp + tmp[i];
+	}
+	this->dt = temp;
+	
+	for(int i=0;i<data.size();++i){
+		tmp = cutter(this->data[i], ',');
+		temp.clear();
+		tmp.erase(tmp.begin() + k);
+		for(int i=0;i<tmp.size();++i){
+			if(!temp.empty())
+				temp.push_back(',');
+			temp = temp + tmp[i];
+		}
+		this->data[i] = temp;
+	}
+	--this->col;
+	cout<<"\nDone removing label";
+}
+
+void Table::enter(vector<string> qry){
+	if(this->col == 0){
+		cout<<"\nNO lables in the table";
+		return ;
+	}
+	vector<string> tmp;
+	tmp = cutter(label, ',');
+	string temp;
+	temp.clear();
+	
+	do{
+		cout<<"\nEnter "<<tmp[0]<<" : ";
+		getline(cin,temp);
+	}while(!this->uniq(temp));
+	
+	
+	tmp = cutter(this->dval, ',');
+	for(int i=1;i<tmp.size();++i){
+		temp.push_back(',');
+		temp = temp + tmp[i];
+	}
+	this->data.push_back(temp);
+	++this->row;
+}
+
+int Table::uniq(string temp){
+	vector<string> tmp;
+	for(int i=0;i<this->data.size();++i){
+		tmp = cutter(data[i], ',');
+		if(tmp[0] == temp){
+			return 0;
+		}
+	}
+	return 1;
+}
+
+void Table::adder(vector<string> qry){
+	string temp;
+	int k = 0;
+	temp.clear();
+	if(qry.size() >= 2){										//label start
+		temp = qry[1];	
+	}
+	while((temp.length() == 0) || (temp.find(',') != string::npos)){
+		cout<<"\nLabel Name Should not contain \',\' : ";
+		getline(cin,temp);
+	}
+	if(this->label.empty())
+		k = 1;
+	if(!this->label.empty()){
+		this->label.push_back(',');
+	}
+	this->label = this->label + temp;								//label end
+	
+	++this->col;
+	
+	temp.clear();
+	
+	if(k){												//return function for key
+		this->dval.push_back('0');
+		this->dt.push_back('0');
+		return ;
+	}
+	
+	if(qry.size() >= 3){										//dt start
+		temp = qry[2];
+	}
+	
+	while((temp.length() == 0)){
+		cout<<"\nThe datatype will be considered string if the char entered by you is not (I/i) : ";
+		getline(cin,temp);
+	}
+	char t ='0';
+	if(temp[0] == 'I' || temp[0] == 'i')
+		t = '1';
+		
+	if(!this->dt.empty()){
+		this->dt.push_back(',');
+	}
+	
+	this->dt.push_back(t);										//dt end
+	
+	
+	temp.clear();
+	if(t == '0'){											//dval start
+		if(qry.size() >= 4)										
+			temp = qry[3];
+		while((temp.length() == 0)|| (temp.find(',') != string::npos) || (temp[0] == '=') || (temp[0] == '<') || (temp[0] == '>')){
+			cout<<"\nDefault Value Should not contain \',\' : ";
+			getline(cin,temp);
+		}
+	}
+	double ki;
+	if(t == '1'){
+		while(1){
+			cout<<"\nDefault Value Should not contain \',\' : ";
+			if (cin >> ki) {
+				break;
+			}
+			else {
+				cout << "Please enter a valid integer" << endl;
+				cin.clear();
+				cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			}
+		}
+		temp = to_string(ki);
+	}
+	if(!this->dval.empty())
+		this->dval.push_back(',');
+	this->dval = this->dval + temp;	
+	
+	for(int i=0;i<this->data.size();++i){
+		if(!this->data[i].empty())
+			this->data[i].push_back(',');
+		this->data[i] = this->data[i] + temp;
+	}												//dval end
+}
+
+int Table::set(string tb){
+	vector<string> qry;
+	try{		
+		ifstream input( "./."+database->name()+"/"+tb );
+		string line;
+		getline(input,line);
+		qry = cutter(line, ',');
+		if(qry.size() != 4){
+			return 1;
+		}
+		this->tb_name = qry[0];
+		this->row = stoi(qry[1]);
+		this->col = stoi(qry[2]);
+		this->def = qry[3];
+		getline(input,line);
+		this->label = line;
+		getline(input,line);
+		this->dt = line;
+		getline(input,line);
+		this->dval = line;
+		while(getline(input, line ))
+		{
+			this->data.push_back(line);
+		}
+	}
+	catch(...){
+		return 1;
+	}
+	return 0;
+}
+
+void Table::save(){
+	string temp;
+	temp = temp + this->tb_name;
+	temp.push_back(',');
+	
+	temp = temp + to_string(this->row);
+	temp.push_back(',');
+	
+	temp = temp + to_string(this->col);
+	temp.push_back(',');
+	
+	temp = temp + this->def;
+	temp.push_back('\n');
+	
+	temp = temp + this->label;
+	temp.push_back('\n');
+	
+	temp = temp + this->dt;
+	temp.push_back('\n');
+	
+	temp = temp + this->dval;
+	temp.push_back('\n');
+	
+	for(int i=0;i<this->data.size();++i){
+		temp = temp + this->data[i];
+		temp.push_back('\n');
+	}
+	
+	ofstream output("./."+database->name()+"/"+this->tb_name, ios::out);
+	output << temp;
+	output.close();
+}
+
+void Table::disp(){
+	cout<<endl;
+	cout<<"  +================================================================================================================================================+"<<endl;
+	cout<<"  |------------------------------------------------------------Table Details-----------------------------------------------------------------------|"<<endl;
+	cout<<"  +================================================================================================================================================+"<<endl;
+	cout<<"\nName : "<<this->tb_name;
+	cout<<"\nDiscription : "<<this->def;
+	cout<<"\nNumber of Lables : "<<this->col;
+	cout<<"\nNumber of Elements : "<<this->row;
+	cout<<"\nLables : ";
+	vector<string> lables_all;
+	lables_all = cutter(this->label, ',');
+	for(int i=0;i<lables_all.size();++i){
+		cout<<"\n----> "<<lables_all[i];
+		if(i == 0)
+			cout<<" <---- THE KEY";
+	}
+	if(lables_all.size() == 0){
+		cout<<"None";
+	}
+}

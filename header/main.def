@@ -1,0 +1,855 @@
+void header(){
+	cout<<endl;
+	system("clear");
+	cout<<"  +================================================================================================================================================+"<<endl;
+	cout<<"  |----------------------------------------------------------------MaDaR4--------------------------------------------------------------------------|"<<endl;
+	cout<<"  |-------------------------------------------------A DataBase Management system based on C++------------------------------------------------------|"<<endl;
+	cout<<"  |-----------------------------------------------------Built by 7211 - Pranav Bhaskar-------------------------------------------------------------|"<<endl;
+	cout<<"  +================================================================================================================================================+"<<endl;
+}
+
+void footer(){
+	cout<<endl;
+	system("clear");
+	cout<<"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+	cout<<"  +================================================================================================================================================+"<<endl;
+	cout<<"  |----------------------------------------------------------------MaDaR4--------------------------------------------------------------------------|"<<endl;
+	cout<<"  |-------------------------------------------------A DataBase Management system based on C++------------------------------------------------------|"<<endl;
+	cout<<"  |-----------------------------------------------------Built by 7211 - Pranav Bhaskar-------------------------------------------------------------|"<<endl;
+	cout<<"  |-------------------------------------------------------------SEE YOU AGAIN----------------------------------------------------------------------|"<<endl;
+	cout<<"  +================================================================================================================================================+"<<endl;
+	cout<<"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+}
+
+vector<string> cutter(string str, char delimer){
+	vector<string> cut;
+	string temp;
+	temp.clear();
+	for(int i=0;i<str.length();++i){
+		if(str[i] == delimer){
+			if(!temp.empty())
+				cut.push_back(temp);
+			temp.clear();
+			continue;
+		}
+		temp.push_back(str[i]);
+	}
+	if(!temp.empty())
+		cut.push_back(temp);
+	return cut;
+}
+
+void loader(vector<string> q){
+	if((q[1] == "*")&&(q[3] == "*")){
+		load->label = table->label;
+		load->row = table->row;
+		load->col = table->col;
+		load->dt = table->dt;
+		load->dval = table->dval;
+		load->data = table->data;
+		return ;
+	}
+	else
+	if(q[3] == "*"){
+		cout<<"\nMalformed request";
+		load = NULL;
+		return ;
+	}
+	else{
+		vector<string> ele;
+		ele = cutter(q[1], ',');
+		vector<string> lab;
+		lab = cutter(q[3], ',');
+		if(ele.size() >= lab.size()){
+			cout<<"\nMalformed request";
+			load = NULL;
+			return ;
+		}
+		char oper;
+		int index;
+		int check_int;
+		string rand;
+		string check_str;
+		vector<string> lables_table;
+		lables_table = cutter(table->label, ',');
+		load->label = table->label;
+		load->row = table->row;
+		load->col = table->col;
+		load->dt = table->dt;
+		load->dval = table->dval;
+		load->data = table->data;
+		int flag;
+		for(int i=1;i<lables_table.size();++i){
+			flag = 0;
+			for(int k=0;k<lab.size();++k){
+				if((lab[k] == "*")&&(lab[k].length() == 1) ){
+					flag = 1;
+					break;
+				}
+				if(lab[k] == lables_table[i]){
+					flag = 1;
+					break;
+				}
+			}
+			if(flag == 0){
+				load->rem_lab(lables_table[i]);
+			}
+		}
+		vector<string> data_type;
+		vector<string> temp_data;
+		for(int i=0;i<ele.size();++i){
+			oper = ele[i][0];
+			rand = ele[i];
+			rand.erase(0, 1);
+			if(oper == '*'){
+				if(ele[i].size() == 1){
+					continue;
+				}
+				else{
+					load = NULL;
+					cout<<"\nMalformed Request";
+					return ;
+				}
+			}
+			if(!((oper == '=') || (oper == '<') || (oper == '>'))){
+				load = NULL;
+				cout<<"\nMalformed Request";
+				return ;
+			}
+			
+			for(int j=0;j<load->data.size();++j){
+				temp_data = cutter(load->data[j], ',');
+				index = load->lab_find(lab[i]);
+				if(index == -1){
+					load = NULL;
+					cout<<"\nMalformed Request";
+					return ;
+				}
+				data_type = cutter(load->dt, ',');
+				if(data_type[index] == "1"){
+					if(oper == '='){
+						if(stoi(temp_data[index]) != stoi(rand)){
+							load->rem_ele(temp_data[index], lab[i]);
+						}
+					}
+					
+					if(oper == '>'){
+						if(stoi(temp_data[index]) < stoi(rand)){
+							load->rem_ele(temp_data[index], lab[i]);
+						}
+					}
+					
+					if(oper == '<'){
+						if(stoi(temp_data[index]) > stoi(rand)){
+							load->rem_ele(temp_data[index], lab[i]);
+						}
+					}
+					
+				}
+				if(data_type[index] == "0"){
+					if(oper == '='){
+						if(temp_data[index] != rand){
+							load->rem_ele(temp_data[index], lab[i]);
+						}
+					}
+					
+					if(oper == '>'){
+						if(temp_data[index] < rand){
+							load->rem_ele(temp_data[index], lab[i]);
+						}
+					}
+					
+					if(oper == '<'){
+						if(temp_data[index] > rand){
+							load->rem_ele(temp_data[index], lab[i]);
+						}
+					}
+				}
+			}
+			
+			
+			
+			
+			
+			
+		}
+	}
+}
+
+void tb_select(string tb){
+	if(database == NULL){
+		cout<<"\nERROR : NO database selected.";
+		return ;
+	}
+	if(!database->check_table(tb)){
+		cout<<"\nFailed to SELECT Table : "<<tb;
+		return ;
+	}
+	else{
+		table = new Table;
+		if(table->set(tb)){
+			table = NULL;
+			cout<<"\nFailed to SELECT table : "<<tb;
+			return ;
+		}
+		cout<<"\nTable "<<tb<<" selected";
+	}
+}
+
+void db_select(string db){
+	if(system(("ls ./."+db+"/.conf").c_str())){
+		cout<<"\nNO Database with name : "<<db;
+		return ;
+	}
+	else{
+		try{
+			database = new Database();
+			if(database->set(db)){
+				cout<<"\nFailed to load the database";
+				database = NULL;
+				return ;
+			}
+			cout<<"\nDatabase SELECTED : "<<db;
+		}
+		catch(...){
+			database = NULL;
+			cout<<"\nFailed to SELECT Database : "<<db;
+		}
+	}
+}
+
+void db_create(string db){
+	if(!system(("ls ./."+db).c_str())){
+		cout<<"\nDatabase with name "<<db<<" already exists.";
+		return ;
+	}
+	if(!system(("mkdir ./."+db).c_str())){
+		try{
+			system(("touch ./."+db+"/.conf").c_str());
+			database = new Database(db);
+			cout<<"\nDatabase "<<database->name()<<" Created Succesfully";
+		}
+		catch(...){
+			cout<<"\nFailed to configure database";
+			database = NULL;
+		}
+	}
+	else{
+		cout<<"\nFailed to make database";
+	}
+	
+}
+
+void tb_create(string tb){
+	if(database->check_table(tb)){
+		cout<<"\nTable "<<tb<<" already exists.";
+		return ;
+	}
+	if(!system(("touch ./."+database->name()+"/"+tb).c_str())){
+		try{
+			table = new Table(tb);
+			if(database->tb_crt(tb))
+				table = NULL;
+		}
+		catch(...){
+			cout<<"\nFailed to read from table";
+			table = NULL;
+		}
+	}
+	else{
+		cout<<"\nFailed to make table";
+	}
+	
+}
+
+int crea(vector<string> qry, vector<string> q){
+	if(qry[0] == "CREATE"){
+		if(qry.size() == 2){
+			if(database == NULL){
+				db_create(q[1]);
+				return 1;
+			}
+			else{
+				tb_create(q[1]);
+				return 1;
+			}
+		}
+		else{
+			cout<<"\nMalformed Request";
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int selc(vector<string> qry, vector<string> q){
+	if(qry[0] == "SELECT"){
+		if(qry.size() == 4){
+			if(qry[2] == "FROM"){
+				db_select(q[3]);
+				tb_select(q[1]);
+				return 1;
+			}
+		}
+		else
+		if(qry.size() == 2){
+			if(database == NULL){
+				db_select(q[1]);
+				return 1;
+			}
+			else{
+				tb_select(q[1]);
+				return 1;
+			}
+		}
+		else{
+			cout<<"\nMalformed Request";
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int env(vector<string> qry){
+	if((qry[0] == "ENV") && (qry.size() == 1)){
+		if(database == NULL){
+			cout<<"\nDatabase Selected : None"<<"\nTable Selected : None\nLoad Status : Empty\n";
+			return 1;
+		}
+		else
+		if(table == NULL){
+			cout<<"\nDatabase Selected : "<<database->name()<<"\nTable Selected : None\nLoad Status : Empty\n";
+			database->disp();
+			return 1;
+		}
+		else{
+			cout<<"\nDatabase Selected : "<<database->name()<<"\nTable Selected : "<<table->name()<<"\nLoad Status : ";
+			if(load == NULL)
+				cout<<"Empty\n";
+			else
+				cout<<"Loaded\n";
+			database->disp();
+			table->disp();
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int unselc(vector<string> qry){
+	if((qry[0] == "UNSELECT") && (qry.size() == 1)){
+		if(database == NULL){
+			cout<<"\nAlready unselected everything";
+			return 1;
+		}
+		else
+		if(table == NULL){
+			try{
+				database = NULL;
+				cout<<"\nDatabase UNSELECTED";
+			}
+			catch(...){
+				cout<<"\nFailed to UNSELECT database";
+			}
+			return 1;
+		}
+		else{
+			try{
+				table = NULL;
+				load = NULL;
+				cout<<"\nTable UNSELECTED";
+			}
+			catch(...){
+				cout<<"\nFailed to UNSELECT table";
+			}
+			return 1;
+		}
+	}
+	return 0;
+}
+
+void saviour(){
+	if(database != NULL){
+		if(table != NULL){
+			table->save();
+		}
+		database->save();
+	}
+}
+
+int del(vector<string> qry){
+	if((qry[0] == "DELETE") && (qry.size() == 1)){
+		if(database == NULL){
+			cout<<"\nNothing Selected to delete";
+			return 1;
+		}
+		else
+		if(table == NULL){
+			try{
+				string db;
+				db = database->name();
+				database = NULL;
+				if((system(("rm -rf ./."+db).c_str()))){
+					cout<<"\nFailed to delete Database "<<db;
+				}
+				cout<<"\nDatabase Deleted";
+			}
+			catch(...){
+				cout<<"\nFailed to delete database";
+			}
+			return 1;
+		}
+		else{
+			try{
+				string db;
+				db = database->name();
+				string tb;
+				tb = table->name();
+				if((system(("rm -f ./."+db+"/"+tb).c_str()))){
+					cout<<"\nFailed to delete Database "<<db;
+				}
+				table = NULL;
+				database->dele(tb);
+				cout<<"\nTable Deleted";
+			}
+			catch(...){
+				cout<<"\nFailed to delete table";
+			}
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int add(vector<string> qry, vector<string> q){
+	if((qry[0] == "ADD")&&(qry.size() <= 4)){
+		if(database == NULL){
+			cout<<"\nNO database selected";
+			return 1;
+		}
+		else
+		if(table == NULL){
+			cout<<"\nNO Table selected";
+			return 1;
+		}
+		else{
+			table->adder(q);
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int ent(vector<string> qry){
+	if((qry[0] == "ENTER")&&(qry.size() == 1)){
+		if(database == NULL){
+			cout<<"\nNO database selected";
+			return 1;
+		}
+		else
+		if(table == NULL){
+			cout<<"\nNO Table selected";
+			return 1;
+		}
+		else{
+			table->enter(qry);
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int rem(vector<string> qry, vector<string> q){
+	if(qry[0] == "REMOVE"){
+		if(qry.size() == 4){
+			if(qry[2] == "FROM"){
+				if(database == NULL){
+					cout<<"\nNO database Selected";
+					return 1;
+				}
+				else
+				if(table == NULL){
+					cout<<"\nNO Table Selected";
+					return 1;
+				}
+				else{
+					table->rem_ele(q[1], q[3]);
+					return 1;
+				}
+				
+			}
+		}
+		else
+		if(qry.size() == 2){
+			if(database == NULL){
+				cout<<"\nNO database Selected";
+				return 1;
+			}
+			else
+			if(table == NULL){
+				cout<<"\nNO Table Selected";
+				return 1;
+			}
+			else{
+				table->rem_lab(q[1]);
+				return 1;
+			}
+		}
+		else{
+			cout<<"\nMalformed Request";
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int edt(vector<string> qry, vector<string> q){
+	if(qry[0] == "EDIT"){
+		if(qry.size() == 4){
+			if(qry[2] == "FROM"){
+				if(database == NULL){
+					cout<<"\nNO database Selected";
+					return 1;
+				}
+				else
+				if(table == NULL){
+					cout<<"\nNO Table Selected";
+					return 1;
+				}
+				else{
+					table->edt_ele(q[1], q[3]);
+					return 1;
+				}
+			}
+		}
+/*		else
+		if(qry.size() == 2){
+			if(database == NULL){
+				cout<<"\nNO database Selected";
+				return 1;
+			}
+			else
+			if(table == NULL){
+				cout<<"\nNO Table Selected";
+				return 1;
+			}
+			else{
+				table->edt(q[1]);
+				return 1;
+			}
+		}
+*/		else{
+			cout<<"\nMalformed Request";
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int pri(vector<string> qry){
+	if((qry[0] == "PRINT")&&(qry.size() == 1)){
+		if(database == NULL){
+			cout<<"\nNO database selected";
+			return 1;
+		}
+		else
+		if(table == NULL){
+			cout<<"\nNO Table selected";
+			return 1;
+		}
+		else{
+			table->print();
+			return 1;
+		}
+	}
+	if((qry[0] == "HEAD")&&(qry.size() == 1)){
+		if(database == NULL){
+			cout<<"\nNO database selected";
+			return 1;
+		}
+		else
+		if(table == NULL){
+			cout<<"\nNO Table selected";
+			return 1;
+		}
+		else{
+			table->print(10);
+			return 1;
+		}
+	}
+	if((qry[0] == "TAIL")&&(qry.size() == 1)){
+		if(database == NULL){
+			cout<<"\nNO database selected";
+			return 1;
+		}
+		else
+		if(table == NULL){
+			cout<<"\nNO Table selected";
+			return 1;
+		}
+		else{
+			table->print(-10);
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int ld(vector<string> qry, vector<string> q){
+	if((qry[0] == "LOAD") && (qry.size() == 4)){
+		if(qry[2] == "FROM"){
+			if(database == NULL){
+				cout<<"\nNO database selected";
+				return 1;
+			}
+			else
+			if(table == NULL){
+				cout<<"\nNO Table selected";
+				return 1;
+			}
+			else{
+				load = new Table("Load");
+				loader(q);
+				return 1;
+			}
+		}
+	}
+	
+	if((qry[0] == "LOAD") && (qry.size() == 2)){
+		if(qry[1] == "PRINT"){
+			if(database == NULL){
+				cout<<"\nNO database selected";
+				return 1;
+			}
+			else
+			if(table == NULL){
+				cout<<"\nNO Table selected";
+				return 1;
+			}
+			else
+			if(load == NULL){
+				cout<<"\nNOT Loaded";
+				return 1;
+			}
+			else{
+				load->print();
+				return 1;
+			}
+		}
+		if(qry[1] == "HEAD"){
+			if(database == NULL){
+				cout<<"\nNO database selected";
+				return 1;
+			}
+			else
+			if(table == NULL){
+				cout<<"\nNO Table selected";
+				return 1;
+			}
+			else
+			if(load == NULL){
+				cout<<"\nNOT Loaded";
+				return 1;
+			}
+			else{
+				load->print(10);
+				return 1;
+			}
+		}
+		if(qry[1] == "TAIL"){
+			if(database == NULL){
+				cout<<"\nNO database selected";
+				return 1;
+			}
+			else
+			if(table == NULL){
+				cout<<"\nNO Table selected";
+				return 1;
+			}
+			else
+			if(load == NULL){
+				cout<<"\nNOT Loaded";
+				return 1;
+			}
+			else{
+				load->print(-10);
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
+
+int uld(vector<string> qry){
+	if((qry[0] == "UNLOAD") && (qry.size() == 1)){
+		if(database == NULL){
+			cout<<"\nNO database selected";
+			return 1;
+		}
+		else
+		if(table == NULL){
+			cout<<"\nNO Table selected";
+			return 1;
+		}
+		else
+		if(load == NULL){
+			cout<<"\nNOT Loaded";
+			return 1;
+		}
+		else{
+			load = NULL;
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int upld(vector<string> qry){
+	if((qry[0] == "UPLOAD") && (qry.size() == 1)){
+		if(database == NULL){
+			cout<<"\nNO database selected";
+			return 1;
+		}
+		else
+		if(table == NULL){
+			cout<<"\nNO Table selected";
+			return 1;
+		}
+		else
+		if(load == NULL){
+			cout<<"\nNOT Loaded";
+			return 1;
+		}
+		else{
+			table->label = load->label;
+			table->row = load->row;
+			table->col = load->col;
+			table->dt = load->dt;
+			table->dval = load->dval;
+			table->data = load->data;
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int srt(vector<string> qry, vector<string> q){
+	if((qry[0] == "SORT")){
+		if(database == NULL){
+			cout<<"\nNO database selected";
+			return 1;
+		}
+		else
+		if(table == NULL){
+			cout<<"\nNO Table selected";
+			return 1;
+		}
+		else{
+			if(qry.size() == 1){
+				table->sorter();
+				return 1;
+			}
+			if(qry.size() == 2){
+				table->sorter(q[1]);
+				return 1;
+			}
+		}
+	}
+	
+	if((qry[0] == "TORS")){
+		if(database == NULL){
+			cout<<"\nNO database selected";
+			return 1;
+		}
+		else
+		if(table == NULL){
+			cout<<"\nNO Table selected";
+			return 1;
+		}
+		else{
+			if(qry.size() == 1){
+				table->dnsorter();
+				return 1;
+			}
+			if(qry.size() == 2){
+				table->dnsorter(q[1]);
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
+
+int process(string query){
+	if (query == "")
+	{
+		cout<<"\nYou entered an empty string";
+	}
+	else
+	{	
+		string qu = query; 
+		transform(query.begin(), query.end(), query.begin(), ::toupper);
+		vector<string> qry;
+		qry = cutter(query, ' ');
+		vector<string> q;
+		q = cutter(qu, ' ');
+		int t = 0;
+		if((qry[0] == "EXIT") && (qry.size() == 1)){
+			cout<<"\nENTER ANY KEY TO EXIT...";
+			getchar();
+			return 0;
+		}
+		if(!selc(qry, q)){
+			if(!crea(qry, q)){
+				if(!env(qry)){
+					if(!unselc(qry)){
+						if(!del(qry)){
+							if(!add(qry, q)){
+								if(!ent(qry)){
+									if(!rem(qry, q)){
+										if(!edt(qry, q)){
+											if(!pri(qry)){
+												if(!ld(qry, q)){
+													if(!uld(qry)){
+														if(!upld(qry)){
+															if(!srt(qry, q)){
+																cout<<"\nRequest Malformed";
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	saviour();
+	cout<<"\nENTER ANY KEY TO CONTINUE...";
+	getchar();
+	return 1;
+}
+
+int enter_query(){
+	string query;
+	header();
+	cout<<"\n\n\n\n\n\n";
+	if(database == NULL){
+		cout<<"MaDaR4 > ";
+	}
+	else
+	if(table == NULL){
+		cout<<database->name()<<" >> ";
+	}
+	else{
+		cout<<database->name()<<" : "<<table->name()<<" >>> ";
+	}
+	getline(cin,query);
+	return process(query);
+	
+}

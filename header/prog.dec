@@ -1,0 +1,23 @@
+#include<iostream>
+#include<string>
+#include<vector>
+#include<algorithm> 
+#include<fstream>
+#include<cstdio>					//getchar()
+#include<cstring>					//.c_str()
+#include<iomanip>					//setw()
+
+using namespace std;	
+string prime[] = {"SELECT", "CREATE", "DELETE", "UNSELECT", "ENV"};					//Important global's
+string secon[] = {"SELECT", "CREATE", "DELETE", "UNSELECT", "ENV", "ADD", "ENTER", "EDIT", "PRINT"};
+
+vector<string> cutter(string, char);
+
+#include "db.dec"
+Database *database;
+#include "db.def"
+#include "table.dec"
+Table *table;
+Table *load;
+#include "table.def"										//includeing custom made files
+#include "main.def"

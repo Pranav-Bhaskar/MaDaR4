@@ -8,4 +8,4 @@ or
   
 Compile the prog.cpp and run it
   
-use the `help` command to get started with MaDaR4 
+Use the `help` command to get started with MaDaR4 

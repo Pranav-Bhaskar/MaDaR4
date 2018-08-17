@@ -1,0 +1,17 @@
+class Database{											//DataBase
+	string db_name;
+	string def;
+	int table_num;
+	string tables;
+	public:
+	void save();
+	string name();
+	Database(string);
+	Database();
+	int check_table(string);
+	int set(string);
+	void disp();
+	void dele(string);
+	int tb_crt(string);
+};
+

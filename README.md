@@ -1,11 +1,13 @@
 # MaDaR4
 It's a C++ based DBMS(Database Management Software) which consits of command similar to SQL.
   
-# NOTE 
-Run the pre-compile file `MaDaR4`
+# Compiling
+Compile the prog.cpp
   
-or 
+# Running 
+Use `chmod +x MaDaR4` before running the file.
   
-Compile the prog.cpp and run it
+Run using `./MaDaR4`
   
+# Help
 Use the `help` command to get started with MaDaR4 

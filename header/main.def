@@ -330,6 +330,25 @@ int env(vector<string> qry){
 	return 0;
 }
 
+int def(vector<string> qry){
+	if((qry[0] == "DISC") && (qry.size() == 1)){
+		if(database == NULL){
+			cout<<"\nNO Database Selected";
+			return 1;
+		}
+		else
+		if(table == NULL){
+			database->des();
+			return 1;
+		}
+		else{
+			table->des();
+			return 1;
+		}
+	}
+	return 0;
+}
+
 int unselc(vector<string> qry){
 	if((qry[0] == "UNSELECT") && (qry.size() == 1)){
 		if(database == NULL){
@@ -499,24 +518,6 @@ int rem(vector<string> qry, vector<string> q){
 
 int edt(vector<string> qry, vector<string> q){
 	if(qry[0] == "EDIT"){
-		if(qry.size() == 4){
-			if(qry[2] == "FROM"){
-				if(database == NULL){
-					cout<<"\nNO database Selected";
-					return 1;
-				}
-				else
-				if(table == NULL){
-					cout<<"\nNO Table Selected";
-					return 1;
-				}
-				else{
-					table->edt_ele(q[1], q[3]);
-					return 1;
-				}
-			}
-		}
-/*		else
 		if(qry.size() == 2){
 			if(database == NULL){
 				cout<<"\nNO database Selected";
@@ -528,11 +529,11 @@ int edt(vector<string> qry, vector<string> q){
 				return 1;
 			}
 			else{
-				table->edt(q[1]);
+				table->edt_ele(q[1]);
 				return 1;
 			}
 		}
-*/		else{
+		else{
 			cout<<"\nMalformed Request";
 			return 1;
 		}
@@ -830,7 +831,7 @@ int srt(vector<string> qry, vector<string> q){
 
 int hlp(vector<string> qry){
 	if((qry[0] == "HELP") && (qry.size() == 1)){
-		cout<<"\nCREATE -> USED TO CREATE A DATABASE/TABLE. \nSELECT -> USED TO SELECT A DATABASE/TABLE.\nENV -> KNOW ABOUT THE CURRENTLY SELECTED DATABASE/TABLE.\nUNSELECT -> USED TO UNSELECT A DATABASE/TABLE\nDELETE -> USED TO DELETE A DATABASE/TABLE\nADD -> USED TO ADD A LABLE TO A TABLE\nENTER -> USED TO MAKE A NEW ENTERY IN THE TABLE\nREMOVE -> USED TO REMOVE A LABEL FROM THE TABLE\nEDIT -> USED TO EDIT A PRE-EXISTING ENTERY IN A TABLE\nPRINT -> DISPLAY THE WHOLE TABLE\nHEAD -> DESPLAY 10 ELEMENTS FROM THE TOP OF THE TABLE\nTAIL -> DISPLAY 10 ELEMENTS FROM THE BOTTOM OF THE TABLE\nLOAD -> USED TO CREATE A COPY OF THE TABLE AND PERFORM OPERATIONS ON IT WITHOUT EFFECTING THE MAIN TABLE\nUPLOAD -> USED TO OVERWRITE THE TABLE WITH THE LOAD TABLE\nUNLOAD -> USED TO CLEAR THE LOAD\nSORT -> USED TO SORT THE TABLE ON THE BAISES OF KEY OF THE TABLE IN ASCENDING ORDER\nTORS -> USED TO SORT THE TABLE ON THE BAISES OF KEY OF THE TABLE IN DESCENDING ORDER\nSORT/TORS Lable_name -> TO SORT ON THE BAISES OF LABEL\n\n\n*NOTE : SOME COMMANDS HAVE ARGUMENTS (EG LOAD =3,>50 FROM Number,Square,*)\n**TO PERFORM OPERATIONS ON THE LOAD TABLE USE `LOAD` BEFORE THE OPERATION (EG LOAD SORT)\n\n";
+		cout<<"\nCREATE -> USED TO CREATE A DATABASE/TABLE. \nSELECT -> USED TO SELECT A DATABASE/TABLE.\nENV -> KNOW ABOUT THE CURRENTLY SELECTED DATABASE/TABLE.\nUNSELECT -> USED TO UNSELECT A DATABASE/TABLE\nDELETE -> USED TO DELETE A DATABASE/TABLE\nADD -> USED TO ADD A LABLE TO A TABLE\nENTER -> USED TO MAKE A NEW ENTERY IN THE TABLE\nDISC -> USED TO DISCRIBE A DATABASE/TABLE\nREMOVE -> USED TO REMOVE A LABEL FROM THE TABLE\nEDIT -> USED TO EDIT A PRE-EXISTING ENTERY IN A TABLE\nPRINT -> DISPLAY THE WHOLE TABLE\nHEAD -> DESPLAY 10 ELEMENTS FROM THE TOP OF THE TABLE\nTAIL -> DISPLAY 10 ELEMENTS FROM THE BOTTOM OF THE TABLE\nLOAD -> USED TO CREATE A COPY OF THE TABLE AND PERFORM OPERATIONS ON IT WITHOUT EFFECTING THE MAIN TABLE\nUPLOAD -> USED TO OVERWRITE THE TABLE WITH THE LOAD TABLE\nUNLOAD -> USED TO CLEAR THE LOAD\nSORT -> USED TO SORT THE TABLE ON THE BAISES OF KEY OF THE TABLE IN ASCENDING ORDER\nTORS -> USED TO SORT THE TABLE ON THE BAISES OF KEY OF THE TABLE IN DESCENDING ORDER\nSORT/TORS Lable_name -> TO SORT ON THE BAISES OF LABEL\n\n\n*NOTE : SOME COMMANDS HAVE ARGUMENTS (EG LOAD =3,>50 FROM Number,Square,*)\n**TO PERFORM OPERATIONS ON THE LOAD TABLE USE `LOAD` BEFORE THE OPERATION (EG LOAD SORT)\n\n";
 		return 1;
 	}
 	return 0;
@@ -870,7 +871,9 @@ int process(string query){
 														if(!upld(qry)){
 															if(!srt(qry, q)){
 																if(!hlp(qry)){
-																	cout<<"\nRequest Malformed";
+																	if(!def(qry)){
+																		cout<<"\nRequest Malformed";
+																	}
 																}
 															}
 														}

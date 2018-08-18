@@ -19,13 +19,14 @@ class Table{											//Table
 	void enter(vector<string>);
 	void rem_ele(string, string);
 	void rem_lab(string);
-	void edt_ele(string, string);
+	void edt_ele(string);
 	void print(int);
 	friend void loader(vector<string>);
 	int lab_find(string);
 	friend int upld(vector<string>);
 	void sorter(string);
 	void dnsorter(string);
+	void des();
 };
 
 

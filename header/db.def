@@ -10,6 +10,12 @@ Database::Database(){
 	
 }
 
+void Database::des(){
+	cout<<"\nEnter the Discription : ";
+	cin>>this->def;
+	cout<<"\nDiscription updated";
+}
+
 int Database::set(string db){
 	vector<string> qry;
 	string line;

@@ -15,6 +15,12 @@ Table::Table(string tb){								//parameterized constructor (creating new table)
 	this->dt.clear();
 }
 
+void Table::des(){
+	cout<<"\nEnter the Discription : ";
+	cin>>this->def;
+	cout<<"\nDiscription updated";
+}
+
 void Table::sorter(string lab = ""){
 	vector<string> tmp;
 	vector<string> tmp1;
@@ -159,62 +165,55 @@ void Table::print(int num=0){
 	}
 }
 
-void Table::edt_ele(string ele, string lab){
-	vector<string> tmp;
-	tmp = cutter(label, ',');
+void Table::edt_ele(string ele){
+	vector<string> tm, ter;
+	tm = cutter(this->label, ',');
+	ter = cutter(this->dt, ',');
 	int i;
-	
-	for(i=0;i<tmp.size();++i){
-		if(tmp[i] == lab){
-			break;
-		}
-	}
-	
-	if(i == tmp.size()){
-		cout<<"\nNO lable with name : "<<lab;
-		return ;
-	}
-	
+	string temp;
+	char t;
+	string tempo;
+	vector<string> tmp;
 	for(int k=0;k<data.size();++k){
 		tmp = cutter(this->data[k], ',');
-		if(tmp[i] == ele){
-			tmp = cutter(this->dt, ',');
-			char t;
-			t = tmp[i][0];
-			string temp, te;
-			if(t == '0'){
-				while((temp.length() == 0)|| (temp.find(',') != string::npos) || (temp[0] == '=') || (temp[0] == '<') || (temp[0] == '>')){
-					cout<<"\nValue Should not contain \',\' \nEnter : ";
-					getline(cin,temp);
+		if(tmp[0] == ele){
+			tempo = ele;
+			for(int i=1;i<tm.size();++i){
+				t = ter[i][0];
+				cout<<"\nEnter for "<<tm[i];
+				if(t == '0'){
+					while((temp.length() == 0)|| (temp.find(',') != string::npos) || (temp[0] == '=') || (temp[0] == '<') || (temp[0] == '>')){
+						cout<<"\nValue Should not contain \',\' \nEnter : ";
+						getline(cin,temp);
+					}
 				}
+				
+				if(t == '1'){
+					double ki;
+					while(1){
+						cout<<"\nValue Should not contain \',\' \nEnter : ";
+						if (cin >> ki) {
+							break;
+						}
+						else {
+							cout << "Please enter a valid integer" << endl;
+							cin.clear();
+							cin.ignore(numeric_limits<streamsize>::max(), '\n');
+						}
+					}
+					temp = to_string(ki);
+				}
+				if(!tempo.empty())
+					tempo.push_back(',');
+				tempo = tempo + temp;
 			}
 			
-			if(t == '1'){
-				double ki;
-				while(1){
-					cout<<"\nValue Should not contain \',\' \nEnter : ";
-					if (cin >> ki) {
-						break;
-					}
-					else {
-						cout << "Please enter a valid integer" << endl;
-						cin.clear();
-						cin.ignore(numeric_limits<streamsize>::max(), '\n');
-					}
-				}
-				temp = to_string(ki);
-			}
-			tmp = cutter(this->data[k], ',');
-			tmp[i] = temp;
-			for(int j=0;j<tmp.size();++j){
-				if(!te.empty())
-					te.push_back(',');
-				te = te + tmp[j];
-			}
-			data[k] = te;
+			data[k] = tempo;
+			cout<<"\nSuccessfully edited";
+			return ;
 		}
 	}
-	cout<<"\nSuccessfully edited";
+	cout<<"\nNo such element";
 }
 
 void Table::rem_ele(string ele, string lab){

@@ -13,5 +13,7 @@ class Database{											//DataBase
 	void disp();
 	void dele(string);
 	int tb_crt(string);
+	void des();
 };
+
 

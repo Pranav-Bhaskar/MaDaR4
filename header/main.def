@@ -21,6 +21,17 @@ void footer(){
 	cout<<"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 }
 
+bool exist_test(string name) {
+	ifstream f(name.c_str());
+	return f.good();
+}
+
+bool make_file(string name){
+	ofstream touch(name);
+	touch.close();
+	return exist_test(name);
+}
+
 vector<string> cutter(string str, char delimer){
 	vector<string> cut;
 	string temp;
@@ -191,7 +202,7 @@ void tb_select(string tb){
 }
 
 void db_select(string db){
-	if(system(("ls ./."+db+"/.conf").c_str())){
+	if(!exist_test("./."+db+"/.conf")){
 		cout<<"\nNO Database with name : "<<db;
 		return ;
 	}
@@ -213,13 +224,14 @@ void db_select(string db){
 }
 
 void db_create(string db){
-	if(!system(("ls ./."+db).c_str())){
+	if(exist_test("./."+db+"/.conf")){
 		cout<<"\nDatabase with name "<<db<<" already exists.";
 		return ;
 	}
 	if(!system(("mkdir ./."+db).c_str())){
 		try{
-			system(("touch ./."+db+"/.conf").c_str());
+			if(!make_file("./."+db+"/.conf"))
+				throw "error";
 			database = new Database(db);
 			cout<<"\nDatabase "<<database->name()<<" Created Succesfully";
 		}
@@ -239,7 +251,7 @@ void tb_create(string tb){
 		cout<<"\nTable "<<tb<<" already exists.";
 		return ;
 	}
-	if(!system(("touch ./."+database->name()+"/"+tb).c_str())){
+	if(!make_file(" ./."+database->name()+"/"+tb)){
 		try{
 			table = new Table(tb);
 			if(database->tb_crt(tb))

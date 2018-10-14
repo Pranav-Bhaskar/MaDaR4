@@ -28,5 +28,3 @@ class Table{											//Table
 	void dnsorter(string);
 	void des();
 };
-
-

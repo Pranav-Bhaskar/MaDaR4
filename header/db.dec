@@ -15,5 +15,3 @@ class Database{											//DataBase
 	int tb_crt(string);
 	void des();
 };
-
-

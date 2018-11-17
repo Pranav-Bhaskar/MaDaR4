@@ -905,6 +905,7 @@ int process(string query){
 	saviour();
 	cout<<"\nENTER ANY KEY TO CONTINUE...";
 	getchar();
+	cin.ignore(69,'\n');
 	return 1;
 }
 

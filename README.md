@@ -1,11 +1,8 @@
 # MaDaR4
 It's a C++ based DBMS(Database Management Software) which consits of command similar to SQL.
   
-# Compiling
-Compile the prog.cpp
-  
 # Running 
-Use `chmod +x MaDaR4` before running the file.
+Use `g++ prog.cpp -o MaDaR4` to build the repository.
   
 Run using `./MaDaR4`
   

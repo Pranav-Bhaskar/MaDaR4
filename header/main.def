@@ -1,6 +1,6 @@
 void header(){
 	cout<<endl;
-	system("clear");
+	cout<<"\033[2J\033[0;0H";
 	cout<<"  +================================================================================================================================================+"<<endl;
 	cout<<"  |----------------------------------------------------------------MaDaR4--------------------------------------------------------------------------|"<<endl;
 	cout<<"  |-------------------------------------------------A DataBase Management system based on C++------------------------------------------------------|"<<endl;
@@ -10,7 +10,7 @@ void header(){
 
 void footer(){
 	cout<<endl;
-	system("clear");
+	cout<<"\033[2J\033[0;0H";
 	cout<<"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 	cout<<"  +================================================================================================================================================+"<<endl;
 	cout<<"  |----------------------------------------------------------------MaDaR4--------------------------------------------------------------------------|"<<endl;
@@ -849,7 +849,7 @@ int hlp(vector<string> qry){
 	return 0;
 }
 
-int process(string query){
+bool process(string query){
 	if (query == "")
 	{
 		cout<<"\nYou entered an empty string";
@@ -866,7 +866,7 @@ int process(string query){
 		if((qry[0] == "EXIT") && (qry.size() == 1)){
 			cout<<"\nENTER ANY KEY TO EXIT...";
 			getchar();
-			return 0;
+			return false;
 		}
 		if(!selc(qry, q)){
 			if(!crea(qry, q)){
@@ -906,10 +906,10 @@ int process(string query){
 	cout<<"\nENTER ANY KEY TO CONTINUE...";
 	getchar();
 	cin.ignore(69,'\n');
-	return 1;
+	return true;
 }
 
-int enter_query(){
+bool enter_query(){
 	string query;
 	header();
 	cout<<"\n\n\n\n\n\n";
